@@ -24,9 +24,10 @@
 
         // Load the face-api.js models
         async function loadModels() {
-            await faceapi.nets.ssdMobilenetv1.loadFromUri('https://erabhishekkumar.github.io/models/ssd_mobilenetv1');
-await faceapi.nets.faceLandmark68Net.loadFromUri('https://erabhishekkumar.github.io/models/face_landmark_68');
-await faceapi.nets.faceRecognitionNet.loadFromUri('https://erabhishekkumar.github.io/models/face_recognition');
+            await faceapi.nets.ssdMobilenetv1.loadFromUri('https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/models/ssd_mobilenetv1/');
+await faceapi.nets.faceLandmark68Net.loadFromUri('https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/models/face_landmark_68/');
+await faceapi.nets.faceRecognitionNet.loadFromUri('https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/models/face_recognition/');
+
 
         }
 
