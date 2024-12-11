@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Face Recognition System</title>
-    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/dist/face-api.esm.min.js"></script>
 </head>
 <body>
     <h1>Face Recognition System</h1>
@@ -24,27 +24,28 @@
 
         // Load the face-api.js models
         async function loadModels() {
-            await faceapi.nets.ssdMobilenetv1.loadFromUri('/models');
-            await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
-            await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+            await faceapi.nets.ssdMobilenetv1.loadFromUri('https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/models');
+            await faceapi.nets.faceLandmark68Net.loadFromUri('https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/models');
+            await faceapi.nets.faceRecognitionNet.loadFromUri('https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/models');
         }
 
-        // Load known face descriptors from GitHub (fetch from your GitHub repository)
+        // Fetch all image file names from the GitHub students folder
         async function loadKnownDescriptors() {
-            // List of all photos in your GitHub students folder
-            const photoNames = [
-                '21101157001_Abhishek_Kumar.jpg',
-                '21101157002_Sudhir_Singh.jpg',
-                // Add more file names here as needed
-            ];
+            const studentFolderUrl = 'https://api.github.com/repos/ErAbhishekKumar/erabhishekkumar.github.io/contents/students';
 
-            for (const photo of photoNames) {
-                const imageUrl = `https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/students/${photo}`;
-                const response = await fetch(imageUrl);
-                const img = await faceapi.bufferToImage(await response.arrayBuffer());
-                const fullFaceDescription = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
-                if (fullFaceDescription) {
-                    knownDescriptors.push({ descriptor: fullFaceDescription.descriptor, name: photo.split('_').slice(1).join(' ') });
+            // Fetch list of files in students folder
+            const response = await fetch(studentFolderUrl);
+            const files = await response.json();
+
+            for (const file of files) {
+                if (file.type === 'file' && file.name.endsWith('.jpg')) {  // Only .jpg files
+                    const imageUrl = file.download_url;
+                    const response = await fetch(imageUrl);
+                    const img = await faceapi.bufferToImage(await response.arrayBuffer());
+                    const fullFaceDescription = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+                    if (fullFaceDescription) {
+                        knownDescriptors.push({ descriptor: fullFaceDescription.descriptor, name: file.name });
+                    }
                 }
             }
         }
