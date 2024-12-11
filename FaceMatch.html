@@ -25,10 +25,8 @@
         // Load the face-api.js models
         async function loadModels() {
             await faceapi.nets.ssdMobilenetv1.loadFromUri('https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/models/ssd_mobilenetv1/');
-await faceapi.nets.faceLandmark68Net.loadFromUri('https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/models/face_landmark_68/');
-await faceapi.nets.faceRecognitionNet.loadFromUri('https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/models/face_recognition/');
-
-
+            await faceapi.nets.faceLandmark68Net.loadFromUri('https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/models/face_landmark_68/');
+            await faceapi.nets.faceRecognitionNet.loadFromUri('https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/models/face_recognition/');
         }
 
         // Fetch all image file names from the GitHub students folder
@@ -36,19 +34,23 @@ await faceapi.nets.faceRecognitionNet.loadFromUri('https://raw.githubusercontent
             const studentFolderUrl = 'https://api.github.com/repos/ErAbhishekKumar/erabhishekkumar.github.io/contents/students';
 
             // Fetch list of files in students folder
-            const response = await fetch(studentFolderUrl);
-            const files = await response.json();
+            try {
+                const response = await fetch(studentFolderUrl);
+                const files = await response.json();
 
-            for (const file of files) {
-                if (file.type === 'file' && file.name.endsWith('.jpg')) {  // Only .jpg files
-                    const imageUrl = file.download_url;
-                    const response = await fetch(imageUrl);
-                    const img = await faceapi.bufferToImage(await response.arrayBuffer());
-                    const fullFaceDescription = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
-                    if (fullFaceDescription) {
-                        knownDescriptors.push({ descriptor: fullFaceDescription.descriptor, name: file.name });
+                for (const file of files) {
+                    if (file.type === 'file' && file.name.endsWith('.jpg')) {  // Only .jpg files
+                        const imageUrl = file.download_url;
+                        const response = await fetch(imageUrl);
+                        const img = await faceapi.bufferToImage(await response.arrayBuffer());
+                        const fullFaceDescription = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+                        if (fullFaceDescription) {
+                            knownDescriptors.push({ descriptor: fullFaceDescription.descriptor, name: file.name });
+                        }
                     }
                 }
+            } catch (err) {
+                console.error("Error loading descriptors:", err);
             }
         }
 
