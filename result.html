@@ -113,7 +113,7 @@
             const url = `https://api.allorigins.win/get?url=${encodeURIComponent(`http://results.beup.ac.in/ResultsBTech6thSem2024_B2021Pub.aspx?Sem=VI&RegNo=${regNo}`)}`;
 
             try {
-                let response, result, retryCount = 0, maxRetries = 5;
+                let response, result, retryCount = 0, maxRetries = 20;
 
                 do {
                     response = await fetch(url);
