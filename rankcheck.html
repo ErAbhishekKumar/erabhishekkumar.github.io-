@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Result Checker</title>
+</head>
+<body>
+    <h2>Enter Registration Number</h2>
+    <form action="/get_result" method="POST">
+        <label for="reg_no">Registration Number:</label>
+        <input type="text" id="reg_no" name="reg_no" required>
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if result %}
+    <h3>Result for Registration Number {{ reg_no }}:</h3>
+    <p>Name: {{ result.name }}</p>
+    <p>Rank: {{ result.rank }} / {{ result.total_students }}</p>
+    <p>SGPA: {{ result.sgpa }}</p>
+    <p>Number of students with same SGPA: {{ result.same_sgpa_count }}</p>
+    {% endif %}
+</body>
+</html>
