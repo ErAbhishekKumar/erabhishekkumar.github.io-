@@ -4,21 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Result Checker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
 </head>
 <body>
     <h2>Enter Registration Number</h2>
-    <form action="/get_result" method="POST">
+    <form id="regForm">
         <label for="reg_no">Registration Number:</label>
         <input type="text" id="reg_no" name="reg_no" required>
         <button type="submit">Submit</button>
     </form>
 
-    {% if result %}
-    <h3>Result for Registration Number {{ reg_no }}:</h3>
-    <p>Name: {{ result.name }}</p>
-    <p>Rank: {{ result.rank }} / {{ result.total_students }}</p>
-    <p>SGPA: {{ result.sgpa }}</p>
-    <p>Number of students with same SGPA: {{ result.same_sgpa_count }}</p>
-    {% endif %}
+    <h3>Result:</h3>
+    <div id="result">
+        <!-- Result will be displayed here -->
+    </div>
+
+    <script>
+        const fileUrl = 'https://github.com/your-username/your-repo/raw/main/all_college_results.xlsx';
+
+        // Fetch the Excel file from GitHub
+        async function fetchExcelData() {
+            const response = await fetch(fileUrl);
+            const data = await response.arrayBuffer();
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheet = workbook.Sheets[workbook.SheetNames[0]]; // Assuming data is in the first sheet
+            const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 }); // Using header: 1 to ensure the first row is headers
+            return jsonData;
+        }
+
+        // Handle form submission
+        document.getElementById('regForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const regNo = document.getElementById('reg_no').value;
+
+            const data = await fetchExcelData();
+            
+            // Skip the first row (headers) and process the student data
+            const studentData = data.slice(1); // Removing the first row (headers)
+
+            const student = studentData.find(row => row[0] == regNo); // Assuming registration number is in the first column
+            
+            if (student) {
+                const name = student[1];  // Name is in the second column
+                const sgpa = student[2];  // SGPA is in the third column
+
+                const totalStudents = studentData.length;
+                const rank = studentData.filter(row => row[2] >= sgpa).length; // Students with equal or higher SGPA
+                const sameSgpaCount = studentData.filter(row => row[2] == sgpa).length;
+
+                document.getElementById('result').innerHTML = `
+                    <p>Name: ${name}</p>
+                    <p>Rank: ${rank} / ${totalStudents}</p>
+                    <p>SGPA: ${sgpa}</p>
+                    <p>Number of students with the same SGPA: ${sameSgpaCount}</p>
+                `;
+            } else {
+                document.getElementById('result').innerHTML = '<p>No student found with this Registration Number.</p>';
+            }
+        });
+    </script>
 </body>
 </html>
