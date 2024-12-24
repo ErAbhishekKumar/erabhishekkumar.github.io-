@@ -7,8 +7,24 @@
      <!-- Content Security Policy (CSP) to allow inline scripts and external scripts from cdnjs -->
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
+    <script>
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            if (dropdown.style.display === "none" || dropdown.style.display === "") {
+                dropdown.style.display = "block";
+            } else {
+                dropdown.style.display = "none";
+            }
+        }
+    </script>
 </head>
 <body>
+     <h1>Civil Engineering</h1>
+    <p>Session:</p>
+    <div class="session">
+        <button onclick="toggleDropdown('5thce2125')">5th Sem Civil((2021-25)</button>
+        <div id="5thce2125" class="dropdown">
+            
     <h1>5th Sem. (2021-25) Rank Check <h1>
         <h4> in All Your Civil Engg. Batchmates in Bihar Engineering University<h4>
     <h2>Enter Registration Number</h2>
@@ -67,5 +83,7 @@
             }
         });
     </script>
+        </div>
+        </div>
 </body>
 </html>
