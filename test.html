@@ -9,25 +9,37 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
 </head>
 <body>
-    <h1>5th Sem. (2021-25) Rank Check</h1>
-    <h4>in All Your Civil Engg. Batchmates in Bihar Engineering University</h4>
+    <!-- Initially only this button is visible -->
+    <button id="showFormButton">5th Civil (2021-25)</button>
 
-    <h2>Enter Registration Number</h2>
-    <form id="regForm">
-        <label for="reg_no">Registration Number:</label>
-        <input type="text" id="reg_no" name="reg_no" required>
-        <button type="button" id="fetchResultButton">Show Result</button>
-    </form>
+    <!-- The form section is hidden initially -->
+    <div id="formSection" style="display: none;">
+        <h1>5th Sem. (2021-25) Rank Check</h1>
+        <h4>in All Your Civil Engg. Batchmates in Bihar Engineering University</h4>
 
-    <div id="resultSection" style="display: none;">
-        <h3>Result:</h3>
-        <div id="result">
-            <!-- Result will be displayed here -->
+        <h2>Enter Registration Number</h2>
+        <form id="regForm">
+            <label for="reg_no">Registration Number:</label>
+            <input type="text" id="reg_no" name="reg_no" required>
+            <button type="button" id="fetchResultButton">Show Result</button>
+        </form>
+
+        <div id="resultSection" style="display: none;">
+            <h3>Result:</h3>
+            <div id="result">
+                <!-- Result will be displayed here -->
+            </div>
         </div>
     </div>
 
     <script>
         const fileUrl = 'https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/all_college_results.xlsx';
+
+        // Show the form section when the main button is clicked
+        document.getElementById('showFormButton').addEventListener('click', function() {
+            document.getElementById('showFormButton').style.display = 'none'; // Hide the button
+            document.getElementById('formSection').style.display = 'block'; // Show the form
+        });
 
         // Fetch the Excel file from GitHub
         async function fetchExcelData() {
@@ -39,7 +51,7 @@
             return jsonData;
         }
 
-        // Handle button click
+        // Handle button click to fetch the result
         document.getElementById('fetchResultButton').addEventListener('click', async function() {
             const regNo = document.getElementById('reg_no').value;
 
