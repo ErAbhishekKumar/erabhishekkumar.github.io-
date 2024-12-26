@@ -12,6 +12,7 @@
     <!-- Buttons for different branches -->
     <button class="branchButton" data-branch="civil">5th Civil (2021-25)</button>
     <button class="branchButton" data-branch="electrical">5th Electrical (2021-25)</button>
+    <button class="branchButton" data-branch="civil6">6th Civil (2021-25)</button>
 
     <!-- Civil form section (hidden initially) -->
     <div id="civilFormSection" class="formSection" style="display: none;">
@@ -45,11 +46,28 @@
         </div>
     </div>
 
+    <!-- 6th Civil form section (hidden initially) -->
+    <div id="civil6FormSection" class="formSection" style="display: none;">
+        <h1>6th Sem. (2021-25) Rank Check - Civil</h1>
+        <h4>In All Your Civil Engg. Batchmates in Bihar Engineering University</h4>
+        <h2>Enter Registration Number</h2>
+        <form id="civil6RegForm">
+            <label for="civil6_reg_no">Registration Number:</label>
+            <input type="text" id="civil6_reg_no" name="reg_no" required>
+            <button type="button" class="fetchResultButton" data-branch="civil6">Show Result</button>
+        </form>
+        <div id="civil6ResultSection" style="display: none;">
+            <h3>Result:</h3>
+            <div id="civil6Result"></div>
+        </div>
+    </div>
+
     <script>
         // File URLs for different branches
         const fileUrls = {
             civil: 'https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/5thce2125.xlsx',
-            electrical: 'https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/5thee2125.xlsx'
+            electrical: 'https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/5thee2125.xlsx',
+            civil6: 'https://raw.githubusercontent.com/ErAbhishekKumar/erabhishekkumar.github.io/main/6thce2125.xlsx' // New file for 6th Civil
         };
 
         // Show the respective form section when a branch button is clicked
