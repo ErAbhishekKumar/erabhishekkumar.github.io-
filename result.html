@@ -13,6 +13,21 @@
         a { color: blue; text-decoration: underline; cursor: pointer; }
         select { margin-left: 5px; }
     </style>
+    <style>
+    @media print {
+        body * {
+            visibility: hidden; /* Sab kuchh hide kar do */
+        }
+        #table-container, #table-container * {
+            visibility: visible; /* Sirf table-container dikhna chahiye */
+        }
+        #table-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    }
+    </style>
 </head>
 <body>
     <h1>Upcoming Result</h1>
@@ -190,23 +205,7 @@
         }
 
         function printTable() {
-    const tableContainer = document.getElementById('table-container');
-    const buttonsContainer = document.getElementById('buttons-container');
-    const specificInput = document.getElementById('specific-input');
-    const rangeInput = document.getElementById('range-input');
-
-    // Temporarily hide other elements
-    buttonsContainer.style.display = 'none';
-    specificInput.style.display = 'none';
-    rangeInput.style.display = 'none';
-
-    // Print only the table content
     window.print();
-
-    // Restore visibility of other elements after printing
-    buttonsContainer.style.display = '';
-    specificInput.style.display = '';
-    rangeInput.style.display = '';
 }
     </script>
 </body>
