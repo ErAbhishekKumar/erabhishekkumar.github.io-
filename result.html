@@ -191,19 +191,22 @@
 
         function printTable() {
     const tableContainer = document.getElementById('table-container');
-    const originalContent = document.body.innerHTML; // Store the original page content
+    const buttonsContainer = document.getElementById('buttons-container');
+    const specificInput = document.getElementById('specific-input');
+    const rangeInput = document.getElementById('range-input');
 
-    // Create a new window for printing
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write('<html><head><title>Print Table</title>');
-    printWindow.document.write('<style>table { width: 100%; border-collapse: collapse; margin-top: 20px; } th, td { border: 1px solid #ddd; padding: 8px; text-align: center; } th { background-color: #f2f2f2; }</style>');
-    printWindow.document.write('</head><body>');
-    printWindow.document.write(tableContainer.innerHTML); // Add the table content
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
+    // Temporarily hide other elements
+    buttonsContainer.style.display = 'none';
+    specificInput.style.display = 'none';
+    rangeInput.style.display = 'none';
+
+    // Print only the table content
+    window.print();
+
+    // Restore visibility of other elements after printing
+    buttonsContainer.style.display = '';
+    specificInput.style.display = '';
+    rangeInput.style.display = '';
 }
     </script>
 </body>
