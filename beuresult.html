@@ -11,6 +11,7 @@
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle; }
         th { background-color: #f2f2f2; }
+        td.sgpa { white-space: nowrap; } /* Prevent wrapping in SGPA column */
         #loading { display: none; margin-top: 20px; }
         .tooltip {
             position: relative;
@@ -256,7 +257,7 @@
                 <tr>
                     <th style="width: 20%;">Registration No</th>
                     <th style="width: 30%;">Name</th>
-                    <th style="width: 25%;">
+                    <th style="width: auto;"> <!-- Adjust width to fit content -->
                         SGPA
                         <select id="sort-options-sgpa" onchange="sortTable('sgpa')">
                             <option value="reg-asc">Ascending Reg No</option>
@@ -448,7 +449,7 @@
                     sgpaTooltip = `<div class="sgpa-tooltip">${sgpa}<span class="tooltiptext">Failed Sub.:<br>${failedSubjects.join('<br>')}</span></div>`;
                 }
 
-                row.innerHTML = `<td class="tooltip"><a href="${baseUrl + regNo}" target="_blank">${regNo}</a><span class="tooltiptext">${generateSemesterLinks(regNo, session, branch, college)}</span></td><td>${name}</td><td>${sgpaTooltip || sgpaContent}</td><td>${cgpa}</td>`;
+                row.innerHTML = `<td class="tooltip"><a href="${baseUrl + regNo}" target="_blank">${regNo}</a><span class="tooltiptext">${generateSemesterLinks(regNo, session, branch, college)}</span></td><td>${name}</td><td class="sgpa">${sgpaTooltip || sgpaContent}</td><td>${cgpa}</td>`;
             } catch (error) {
                 console.error(`Error fetching result for ${regNo}:`, error);
                 row.innerHTML = `<td>${regNo}</td><td>Error fetching data</td><td>N/A</td><td>N/A</td>`;
@@ -553,7 +554,7 @@
 
                         const row = document.createElement('tr');
                         row.classList.add('fade-in'); // Add animation class
-                        row.innerHTML = `<td class="tooltip"><a href="${baseUrl + regNo}" target="_blank">${regNo}</a><span class="tooltiptext">${generateSemesterLinks(regNo, session, branch, college)}</span></td><td>${name}</td><td>${sgpaTooltip || sgpaContent}</td><td>${cgpa}</td>`;
+                        row.innerHTML = `<td class="tooltip"><a href="${baseUrl + regNo}" target="_blank">${regNo}</a><span class="tooltiptext">${generateSemesterLinks(regNo, session, branch, college)}</span></td><td>${name}</td><td class="sgpa">${sgpaTooltip || sgpaContent}</td><td>${cgpa}</td>`;
                         tableBody.appendChild(row);
 
                         // Display the table incrementally
