@@ -9,7 +9,7 @@
         label { margin-right: 10px; }
         select, button { margin: 10px 0; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle; }
         th { background-color: #f2f2f2; }
         #loading { display: none; margin-top: 20px; }
         .tooltip {
@@ -26,7 +26,7 @@
             padding: 5px;
             position: absolute;
             z-index: 1;
-            bottom: 125%; /* Position the tooltip above the text */
+            top: 100%; /* Position the tooltip below the text */
             left: 50%;
             margin-left: -100px;
             opacity: 0;
@@ -75,10 +75,83 @@
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
         }
+        #instructions-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            background-color: #fff;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+        #instructions-popup.show {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+        }
+        #instructions-popup h2 {
+            margin-top: 0;
+        }
+        #instructions-popup p {
+            margin: 10px 0;
+        }
+        #instructions-popup button {
+            display: block;
+            margin: 20px auto 0;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #instructions-popup button:hover {
+            background-color: #0056b3;
+        }
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        @media (max-width: 600px) {
+            body { margin: 10px; }
+            table { font-size: 12px; }
+            th, td { padding: 5px; }
+            select, button { width: 100%; margin: 5px 0; }
+            .tooltip .tooltiptext, .sgpa-tooltip .tooltiptext {
+                width: 150px;
+                margin-left: -75px;
+            }
+        }
+        @media print {
+            body * {
+                visibility: hidden; /* Hide everything */
+            }
+            #results-table, #results-table * {
+                visibility: visible; /* Show only the table */
+            }
+            #results-table {
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Fetch Results</h1>
+    <h1>Create Results Table</h1>
 
     <label for="session">Session:</label>
     <select id="session">
@@ -157,15 +230,33 @@
     </select>
 
     <button id="fetch-results">Fetch Results</button>
+    <button id="instructions-button">Instructions</button>
     <div id="loading">Fetching results, please wait...</div>
+
+    <div id="overlay"></div>
+    <div id="instructions-popup">
+        <h2>Instructions</h2>
+        <ul>
+            <li>This webpage allows you to fetch and display results for students from various colleges.</li>
+            <li>Select the appropriate session, branch, semester, and college, then click "Fetch Results" to retrieve the data.</li>
+            <li>While fetching results, ensure that you have a stable internet connection to avoid interruptions.</li>
+            <li>Use the sorting options to organize the results based on registration number, SGPA, or CGPA.</li>
+            <li>If a student has failed in any subject, a red exclamation mark (!) will appear in the SGPA column. Hovering over the exclamation mark will display the names of the failed subjects.</li>
+            <li>You can filter the table based on failed subjects after the results are fetched.</li>
+            <li>Clicking on a registration number will show links to the results for all semesters from 1st to 8th.</li>
+            <li>If you encounter any errors, try fetching the results again or check your network connection.</li>
+            <li>Contact me via Telegram: <a href="https://t.me/erabhishekkumar" target="_blank">https://t.me/erabhishekkumar</a></li>
+        </ul>
+        <button id="close-popup">Close</button>
+    </div>
 
     <div id="results-table" style="display:none;">
         <table>
             <thead>
                 <tr>
-                    <th>Registration No</th>
-                    <th>Name</th>
-                    <th>
+                    <th style="width: 20%;">Registration No</th>
+                    <th style="width: 30%;">Name</th>
+                    <th style="width: 25%;">
                         SGPA
                         <select id="sort-options-sgpa" onchange="sortTable('sgpa')">
                             <option value="reg-asc">Ascending Reg No</option>
@@ -173,7 +264,7 @@
                             <option value="failed-students">Failed Students</option>
                         </select>
                     </th>
-                    <th>
+                    <th style="width: 25%;">
                         Cur. CGPA
                         <select id="sort-options-cgpa" onchange="sortTable('cgpa')">
                             <option value="reg-asc">Ascending Reg No</option>
@@ -186,6 +277,8 @@
         </table>
     </div>
 
+    <button id="print-table" style="display:none;">Print Table</button>
+
     <script>
         let abortController = new AbortController();
         let isFetching = false;
@@ -193,6 +286,7 @@
         let regularFailures = 0;
         let lateralFailures = 0;
         const maxFailures = 5;
+        let userScrolled = false;
 
         const baseUrls = {
             "2019": {
@@ -203,7 +297,7 @@
                 "V": "https://results.akuexam.net/ResultsBTechBPharm5thSemPub2021.aspx?Sem=V&RegNo=",
                 "VI": "https://results.akuexam.net/ResultsBTechBPharm6thSemPub2022.aspx?Sem=VI&RegNo=",
                 "VII": "http://results.beup.ac.in/ResultsBTech7thSem2022_B2019Pub.aspx?Sem=VII&RegNo=",
-                "VIII": "http://results.beup.ac.in/ResultsBTech8thSem2023Pub.aspx?Sem=VIII&RegNo="
+                "VIII": "http://results.beup.ac.in/ResultsBTech8thSem2023Pub.aspx?Sem=VIII"
             },
             "2020": {
                 "I": "https://results.akuexam.net/ResultsBTechBPharm1stSemPub2020.aspx?Sem=I&RegNo=",
@@ -221,6 +315,7 @@
             const tableBody = document.querySelector('#results-table tbody');
             tableBody.innerHTML = ''; // Clear the table body
             document.getElementById('results-table').style.display = 'none'; // Hide the table
+            document.getElementById('print-table').style.display = 'none'; // Hide the print button
 
             // Reset SGPA sort options
             const sortOptionsSgpa = document.getElementById('sort-options-sgpa');
@@ -284,6 +379,24 @@
             abortController = new AbortController(); // Create a new AbortController
             isFetching = false; // Reset the fetching flag
         }
+
+        function scrollToBottom() {
+            if (!userScrolled) {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY < document.body.scrollHeight - window.innerHeight) {
+                userScrolled = true;
+            } else {
+                userScrolled = false;
+            }
+        });
 
         async function fetchResult(regNo, baseUrl, row) {
             try {
@@ -445,6 +558,10 @@
 
                         // Display the table incrementally
                         document.getElementById('results-table').style.display = 'block';
+                        document.getElementById('print-table').style.display = 'block'; // Show the print button
+
+                        // Scroll to bottom while fetching
+                        scrollToBottom();
 
                     } catch (error) {
                         if (error.name === 'AbortError') {
@@ -473,6 +590,9 @@
             hideLoadingMessage();
             isFetching = false; // Reset the fetching flag
 
+            // Scroll to top once fetching is complete
+            scrollToTop();
+
             // Add options for each unique failed subject to the SGPA sort dropdown
             const sortOptionsSgpa = document.getElementById('sort-options-sgpa');
             failedSubjectsSet.forEach(subject => {
@@ -485,29 +605,6 @@
 
         function generateSemesterLinks(regNo, session, branch, college) {
             const semesters = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
-            const baseUrls = {
-                "2019": {
-                    "I": "https://results.akuexam.net/ResultsBTechBPharm1stSemPub2019.aspx?Sem=I&RegNo=",
-                    "II": "https://results.akuexam.net/ResultsBTechBPharm2ndSemPub2020.aspx?Sem=II&RegNo=",
-                    "III": "https://results.akuexam.net/ResultsBTechBPharm3rdSemPub2020.aspx?Sem=III&RegNo=",
-                    "IV": "https://results.akuexam.net/ResultsBTechBPharm4thSemPub2021.aspx?Sem=IV&RegNo=",
-                    "V": "https://results.akuexam.net/ResultsBTechBPharm5thSemPub2021.aspx?Sem=V&RegNo=",
-                    "VI": "https://results.akuexam.net/ResultsBTechBPharm6thSemPub2022.aspx?Sem=VI&RegNo=",
-                    "VII": "http://results.beup.ac.in/ResultsBTech7thSem2022_B2019Pub.aspx?Sem=VII&RegNo=",
-                    "VIII": "http://results.beup.ac.in/ResultsBTech8thSem2023Pub.aspx?Sem=VIII&RegNo="
-                },
-                "2020": {
-                    "I": "https://results.akuexam.net/ResultsBTechBPharm1stSemPub2020.aspx?Sem=I&RegNo=",
-                    "II": "https://results.akuexam.net/ResultsBTechBPharm2ndSemPub2021.aspx?Sem=II&RegNo=",
-                    "III": "https://results.akuexam.net/ResultsBTechBPharm3rdSemPub2021.aspx?Sem=III&RegNo=",
-                    "IV": "https://results.akuexam.net/ResultsBTechBPharm4thSemPub2022.aspx?Sem=IV&RegNo=",
-                    "V": "http://results.beup.ac.in/ResultsBTech5thSem2022_B2020Pub.aspx?Sem=V&RegNo=",
-                    "VI": "http://results.beup.ac.in/ResultsBTech6thSem2023_B2020Pub.aspx?Sem=VI&RegNo=",
-                    "VII": "http://results.beup.ac.in/ResultsBTech7thSem2023_B2020Pub.aspx?Sem=VII&RegNo=",
-                    "VIII": "http://results.beup.ac.in/ResultsBTech8thSem2024Pub.aspx?Sem=VIII&RegNo="
-                }
-            };
-
             return semesters.map(sem => `<a href="${baseUrls[session][sem] + regNo}" target="_blank">${sem} Sem</a>`).join('<br>');
         }
 
@@ -570,6 +667,24 @@
         document.getElementById('branch').addEventListener('change', abortFetch);
         document.getElementById('semester').addEventListener('change', abortFetch);
         document.getElementById('college').addEventListener('change', abortFetch);
+
+        document.getElementById('instructions-button').addEventListener('click', function() {
+            document.getElementById('overlay').style.display = 'block';
+            const popup = document.getElementById('instructions-popup');
+            popup.style.display = 'block';
+            setTimeout(() => popup.classList.add('show'), 10); // Add a slight delay to trigger the transition
+        });
+
+        document.getElementById('close-popup').addEventListener('click', function() {
+            document.getElementById('overlay').style.display = 'none';
+            const popup = document.getElementById('instructions-popup');
+            popup.classList.remove('show');
+            setTimeout(() => popup.style.display = 'none', 500); // Wait for the transition to complete before hiding
+        });
+
+        document.getElementById('print-table').addEventListener('click', function() {
+            window.print();
+        });
     </script>
 </body>
 </html>
