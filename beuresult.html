@@ -156,13 +156,7 @@
 
     <label for="session">Session:</label>
     <select id="session">
-        <option value="2019">2019-23</option>
-        <option value="2020">2020-24</option>
-        <option value="2021">2021-25</option>
-        <option value="2022">2022-26</option>
-        <option value="2023">2023-27</option>
-        <option value="2024">2024-28</option>
-        <option value="2025">2025-29</option>
+        <!-- Options will be dynamically generated -->
     </select>
 
     <label for="branch">Branch:</label>
@@ -174,6 +168,8 @@
         <option value="105">CSE</option>
         <option value="106">IT</option>
         <option value="107">LT</option>
+        <option value="110">EEE</option>
+        <option value="111">IE</option>
     </select>
 
     <label for="semester">Semester:</label>
@@ -286,31 +282,110 @@
         let failedSubjectsSet = new Set();
         let regularFailures = 0;
         let lateralFailures = 0;
-        const maxFailures = 5;
+        const maxFailures = 6;
         let userScrolled = false;
 
-        const baseUrls = {
-            "2019": {
-                "I": "https://results.akuexam.net/ResultsBTechBPharm1stSemPub2019.aspx?Sem=I&RegNo=",
-                "II": "https://results.akuexam.net/ResultsBTechBPharm2ndSemPub2020.aspx?Sem=II&RegNo=",
-                "III": "https://results.akuexam.net/ResultsBTechBPharm3rdSemPub2020.aspx?Sem=III&RegNo=",
-                "IV": "https://results.akuexam.net/ResultsBTechBPharm4thSemPub2021.aspx?Sem=IV&RegNo=",
-                "V": "https://results.akuexam.net/ResultsBTechBPharm5thSemPub2021.aspx?Sem=V&RegNo=",
-                "VI": "https://results.akuexam.net/ResultsBTechBPharm6thSemPub2022.aspx?Sem=VI&RegNo=",
-                "VII": "http://results.beup.ac.in/ResultsBTech7thSem2022_B2019Pub.aspx?Sem=VII&RegNo=",
-                "VIII": "http://results.beup.ac.in/ResultsBTech8thSem2023Pub.aspx?Sem=VIII"
-            },
-            "2020": {
-                "I": "https://results.akuexam.net/ResultsBTechBPharm1stSemPub2020.aspx?Sem=I&RegNo=",
-                "II": "https://results.akuexam.net/ResultsBTechBPharm2ndSemPub2021.aspx?Sem=II&RegNo=",
-                "III": "https://results.akuexam.net/ResultsBTechBPharm3rdSemPub2021.aspx?Sem=III&RegNo=",
-                "IV": "https://results.akuexam.net/ResultsBTechBPharm4thSemPub2022.aspx?Sem=IV&RegNo=",
-                "V": "http://results.beup.ac.in/ResultsBTech5thSem2022_B2020Pub.aspx?Sem=V&RegNo=",
-                "VI": "http://results.beup.ac.in/ResultsBTech6thSem2023_B2020Pub.aspx?Sem=VI&RegNo=",
-                "VII": "http://results.beup.ac.in/ResultsBTech7thSem2023_B2020Pub.aspx?Sem=VII&RegNo=",
-                "VIII": "http://results.beup.ac.in/ResultsBTech8thSem2024Pub.aspx?Sem=VIII&RegNo="
+        const baseUrls = generateBaseUrls();
+
+        function generateBaseUrls() {
+            const baseUrls = {
+                "2019": {
+                    "I": "https://results.akuexam.net/ResultsBTechBPharm1stSemPub2019.aspx?Sem=I&RegNo=",
+                    "II": "https://results.akuexam.net/ResultsBTechBPharm2ndSemPub2020.aspx?Sem=II&RegNo=",
+                    "III": "https://results.akuexam.net/ResultsBTechBPharm3rdSemPub2020.aspx?Sem=III&RegNo=",
+                    "IV": "https://results.akuexam.net/ResultsBTechBPharm4thSemPub2021.aspx?Sem=IV&RegNo=",
+                    "V": "https://results.akuexam.net/ResultsBTechBPharm5thSemPub2021.aspx?Sem=V&RegNo=",
+                    "VI": "https://results.akuexam.net/ResultsBTechBPharm6thSemPub2022.aspx?Sem=VI&RegNo=",
+                    "VII": "http://results.beup.ac.in/ResultsBTech7thSem2022_B2019Pub.aspx?Sem=VII&RegNo=",
+                    "VIII": "http://results.beup.ac.in/ResultsBTech8thSem2023Pub.aspx?Sem=VIII&RegNo="
+                },
+                "2020": {
+                    "I": "https://results.akuexam.net/ResultsBTechBPharm1stSemPub2020.aspx?Sem=I&RegNo=",
+                    "II": "https://results.akuexam.net/ResultsBTechBPharm2ndSemPub2021.aspx?Sem=II&RegNo=",
+                    "III": "https://results.akuexam.net/ResultsBTechBPharm3rdSemPub2021.aspx?Sem=III&RegNo=",
+                    "IV": "https://results.akuexam.net/ResultsBTechBPharm4thSemPub2022.aspx?Sem=IV&RegNo=",
+                    "V": "http://results.beup.ac.in/ResultsBTech5thSem2022_B2020Pub.aspx?Sem=V&RegNo=",
+                    "VI": "http://results.beup.ac.in/ResultsBTech6thSem2023_B2020Pub.aspx?Sem=VI&RegNo=",
+                    "VII": "http://results.beup.ac.in/ResultsBTech7thSem2023_B2020Pub.aspx?Sem=VII&RegNo=",
+                    "VIII": "http://results.beup.ac.in/ResultsBTech8thSem2024Pub.aspx?Sem=VIII&RegNo="
+                },
+                "2021": {
+                    "I": "https://results.akuexam.net/ResultsBTechBPharm1stSemPub2021.aspx?Sem=I&RegNo=",
+                    "II": "https://results.akuexam.net/ResultsBTechBPharm2ndSemPub2022.aspx?Sem=II&RegNo=",
+                    "III": "https://results.beup.ac.in/ResultsBTech3rdSem2022_B2021Pub.aspx?Sem=III&RegNo=",
+                    "IV": "https://results.beup.ac.in/ResultsBTech4thSem2023_B2021Pub.aspx?Sem=IV&RegNo=",
+                    "V": "https://results.beup.ac.in/ResultsBTech5thSem2023_B2021Pub.aspx?Sem=V&RegNo=",
+                    "VI": "https://results.beup.ac.in/ResultsBTech6thSem2024_B2021Pub.aspx?Sem=VI&RegNo=",
+                    "VII": "https://results.beup.ac.in/ResultsBTech7thSem2024_B2021Pub.aspx?Sem=VII&RegNo=",
+                    "VIII": "https://results.beup.ac.in/ResultsBTech8thSem2025Pub.aspx?Sem=VIII&RegNo="
+                },
+                "2022": {
+        "I": "https://results.beup.ac.in/ResultsBTech1stSem2022_B2022Pub.aspx?Sem=I&RegNo=",
+        "II": "https://results.beup.ac.in/ResultsBTech2ndSem2023_B2022Pub.aspx?Sem=II&RegNo=",
+        "III": "https://results.beup.ac.in/ResultsBTech3rdSem2023_B2022Pub.aspx?Sem=III&RegNo=",
+        "IV": "https://results.beup.ac.in/ResultsBTech4thSem2024_B2022Pub.aspx?Sem=IV&RegNo=",
+        "V": "https://results.beup.ac.in/ResultsBTech5thSem2024_B2022Pub.aspx?Sem=V&RegNo=",
+        "VI": "https://results.beup.ac.in/ResultsBTech6thSem2025_B2022Pub.aspx?Sem=VI&RegNo=",
+        "VII": "https://results.beup.ac.in/ResultsBTech7thSem2025_B2022Pub.aspx?Sem=VII&RegNo=",
+        "VIII": "https://results.beup.ac.in/ResultsBTech8thSem2026Pub.aspx?Sem=VIII&RegNo="
+    },
+                "2023": {
+                    "I": "https://results.beup.ac.in/ResultsBTech1stSem2023_B2023Pub.aspx?Sem=I&RegNo=",
+                    "II": "https://results.beup.ac.in/ResultsBTech2ndSem2024_B2023Pub.aspx?Sem=II&RegNo=",
+                    "III": "https://results.beup.ac.in/ResultsBTech3rdSem2024_B2023Pub.aspx?Sem=III&RegNo=",
+                    "IV": "https://results.beup.ac.in/ResultsBTech4thSem2025_B2023Pub.aspx?Sem=IV&RegNo=",
+                    "V": "https://results.beup.ac.in/ResultsBTech5thSem2025_B2023Pub.aspx?Sem=V&RegNo=",
+                    "VI": "https://results.beup.ac.in/ResultsBTech6thSem2026_B2023Pub.aspx?Sem=VI&RegNo=",
+                    "VII": "https://results.beup.ac.in/ResultsBTech7thSem2026_B2023Pub.aspx?Sem=VII&RegNo=",
+                    "VIII": "https://results.beup.ac.in/ResultsBTech8thSem2027Pub.aspx?Sem=VIII&RegNo="
+                },
+                "2024": {
+                    "I": "https://results.beup.ac.in/ResultsBTech1stSem2024_B2024Pub.aspx?Sem=I&RegNo=",
+                    "II": "https://results.beup.ac.in/ResultsBTech2ndSem2025_B2024Pub.aspx?Sem=II&RegNo=",
+                    "III": "https://results.beup.ac.in/ResultsBTech3rdSem2025_B2024Pub.aspx?Sem=III&RegNo=",
+                    "IV": "https://results.beup.ac.in/ResultsBTech4thSem2026_B2024Pub.aspx?Sem=IV&RegNo=",
+                    "V": "https://results.beup.ac.in/ResultsBTech5thSem2026_B2024Pub.aspx?Sem=V&RegNo=",
+                    "VI": "https://results.beup.ac.in/ResultsBTech6thSem2027_B2024Pub.aspx?Sem=VI&RegNo=",
+                    "VII": "https://results.beup.ac.in/ResultsBTech7thSem2027_B2024Pub.aspx?Sem=VII&RegNo=",
+                    "VIII": "https://results.beup.ac.in/ResultsBTech8thSem2028Pub.aspx?Sem=VIII&RegNo="
+                },
+                "2025": {
+                    "I": "https://results.beup.ac.in/ResultsBTech1stSem2025_B2025Pub.aspx?Sem=I&RegNo=",
+                    "II": "https://results.beup.ac.in/ResultsBTech2ndSem2026_B2025Pub.aspx?Sem=II&RegNo=",
+                    "III": "https://results.beup.ac.in/ResultsBTech3rdSem2026_B2025Pub.aspx?Sem=III&RegNo=",
+                    "IV": "https://results.beup.ac.in/ResultsBTech4thSem2027_B2025Pub.aspx?Sem=IV&RegNo=",
+                    "V": "https://results.beup.ac.in/ResultsBTech5thSem2027_B2025Pub.aspx?Sem=V&RegNo=",
+                    "VI": "https://results.beup.ac.in/ResultsBTech6thSem2028_B2025Pub.aspx?Sem=VI&RegNo=",
+                    "VII": "https://results.beup.ac.in/ResultsBTech7thSem2028_B2025Pub.aspx?Sem=VII&RegNo=",
+                    "VIII": "https://results.beup.ac.in/ResultsBTech8thSem2029Pub.aspx?Sem=VIII&RegNo="
+                }
+            };
+
+            const startYear = 2026;
+            const endYear = 2030; // Adjust this to the desired end year
+            const semesters = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
+            const baseUrlPatterns = {
+                "I": "https://results.beup.ac.in/ResultsBTech1stSem{year}_B{startYear}Pub.aspx?Sem=I&RegNo=",
+                "II": "https://results.beup.ac.in/ResultsBTech2ndSem{year}_B{startYear}Pub.aspx?Sem=II&RegNo=",
+                "III": "https://results.beup.ac.in/ResultsBTech3rdSem{year}_B{startYear}Pub.aspx?Sem=III&RegNo=",
+                "IV": "https://results.beup.ac.in/ResultsBTech4thSem{year}_B{startYear}Pub.aspx?Sem=IV&RegNo=",
+                "V": "https://results.beup.ac.in/ResultsBTech5thSem{year}_B{startYear}Pub.aspx?Sem=V&RegNo=",
+                "VI": "https://results.beup.ac.in/ResultsBTech6thSem{year}_B{startYear}Pub.aspx?Sem=VI&RegNo=",
+                "VII": "https://results.beup.ac.in/ResultsBTech7thSem{year}_B{startYear}Pub.aspx?Sem=VII&RegNo=",
+                "VIII": "https://results.beup.ac.in/ResultsBTech8thSem{year}Pub.aspx?Sem=VIII&RegNo="
+            };
+
+            for (let year = startYear; year <= endYear; year++) {
+                const session = `${year}-${year + 4}`;
+                baseUrls[session] = {};
+                semesters.forEach((sem, index) => {
+                    const semYear = year + Math.floor(index / 2);
+                    baseUrls[session][sem] = baseUrlPatterns[sem].replace("{year}", semYear).replace("{startYear}", year);
+                });
             }
-        };
+
+            return baseUrls;
+        }
 
         function resetTable() {
             const tableBody = document.querySelector('#results-table tbody');
@@ -410,7 +485,7 @@
 
                 let nameSelector = '#ContentPlaceHolder1_DataList1_StudentNameLabel_0';
                 let sgpaSelector = '#ContentPlaceHolder1_DataList5_GROSSTHEORYTOTALLabel_0';
-                let cgpaSelector = '';
+                let cgpaSelector = '#ContentPlaceHolder1_GridView3 > tbody > tr:nth-child(2) > td:nth-child(9)';
 
                 if (baseUrl.includes('akuexam.net')) {
                     nameSelector = '#ctl00_ContentPlaceHolder1_DataList1_ctl00_StudentNameLabel';
@@ -427,20 +502,18 @@
                 }
 
                 let failedSubjects = [];
-                if (baseUrl.includes('akuexam.net')) {
-                    const tables = doc.querySelectorAll('#ctl00_ContentPlaceHolder1_GridView1, #ctl00_ContentPlaceHolder1_GridView2');
-                    tables.forEach(table => {
-                        const rows = table.querySelectorAll('tr');
-                        rows.forEach(row => {
-                            const gradeCell = row.querySelector('td:nth-child(6)');
-                            if (gradeCell && gradeCell.textContent.trim() === 'F') {
-                                const subjectName = row.querySelector('td:nth-child(2)').textContent.trim();
-                                failedSubjects.push(subjectName);
-                                failedSubjectsSet.add(subjectName);
-                            }
-                        });
+                const tables = doc.querySelectorAll('#ctl00_ContentPlaceHolder1_GridView1, #ctl00_ContentPlaceHolder1_GridView2, #ContentPlaceHolder1_GridView1, #ContentPlaceHolder1_GridView2');
+                tables.forEach(table => {
+                    const rows = table.querySelectorAll('tr');
+                    rows.forEach(row => {
+                        const gradeCell = row.querySelector('td:nth-child(6)');
+                        if (gradeCell && gradeCell.textContent.trim() === 'F') {
+                            const subjectName = row.querySelector('td:nth-child(2)').textContent.trim();
+                            failedSubjects.push(subjectName);
+                            failedSubjectsSet.add(subjectName);
+                        }
                     });
-                }
+                });
 
                 let sgpaContent = sgpa;
                 let sgpaTooltip = '';
@@ -456,7 +529,17 @@
             }
         }
 
-        document.getElementById('fetch-results').addEventListener('click', async function () {
+        document.getElementById('session').addEventListener('change', abortFetch);
+        document.getElementById('branch').addEventListener('change', abortFetch);
+        document.getElementById('semester').addEventListener('change', abortFetch);
+        document.getElementById('college').addEventListener('change', abortFetch);
+
+        document.getElementById('fetch-results').addEventListener('click', function() {
+            abortFetch();
+            fetchResults();
+        });
+
+        async function fetchResults() {
             if (isFetching) return; // Prevent multiple fetches
             isFetching = true;
 
@@ -478,7 +561,7 @@
             async function fetchStudents(entryType) {
                 let consecutiveFailures = 0; // Counter for consecutive failures
 
-                for (let i = 1; i <= 60; i++) {
+                for (let i = 1; i <= 120; i++) {
                     const serial = i.toString().padStart(2, '0');
                     let regNo = `${session.slice(2)}${branch}${college}${entryType}${serial}`;
 
@@ -506,7 +589,7 @@
 
                         let nameSelector = '#ContentPlaceHolder1_DataList1_StudentNameLabel_0';
                         let sgpaSelector = '#ContentPlaceHolder1_DataList5_GROSSTHEORYTOTALLabel_0';
-                        let cgpaSelector = '';
+                        let cgpaSelector = '#ContentPlaceHolder1_GridView3 > tbody > tr:nth-child(2) > td:nth-child(9)';
 
                         if (baseUrl.includes('akuexam.net')) {
                             nameSelector = '#ctl00_ContentPlaceHolder1_DataList1_ctl00_StudentNameLabel';
@@ -521,7 +604,7 @@
                         if (!name || !sgpa) {
                             consecutiveFailures++;
                             if (consecutiveFailures >= maxFailures) {
-                                console.log(`Stopping fetch after 5 consecutive failures for ${entryType === '0' ? 'regular' : 'lateral'} entries.`);
+                                console.log(`Stopping fetch after ${maxFailures} consecutive failures for ${entryType === '0' ? 'regular' : 'lateral'} entries.`);
                                 break;
                             }
                             continue;
@@ -530,20 +613,18 @@
                         consecutiveFailures = 0; // Reset the counter on success
 
                         let failedSubjects = [];
-                        if (baseUrl.includes('akuexam.net')) {
-                            const tables = doc.querySelectorAll('#ctl00_ContentPlaceHolder1_GridView1, #ctl00_ContentPlaceHolder1_GridView2');
-                            tables.forEach(table => {
-                                const rows = table.querySelectorAll('tr');
-                                rows.forEach(row => {
-                                    const gradeCell = row.querySelector('td:nth-child(6)');
-                                    if (gradeCell && gradeCell.textContent.trim() === 'F') {
-                                        const subjectName = row.querySelector('td:nth-child(2)').textContent.trim();
-                                        failedSubjects.push(subjectName);
-                                        failedSubjectsSet.add(subjectName);
-                                    }
-                                });
+                        const tables = doc.querySelectorAll('#ctl00_ContentPlaceHolder1_GridView1, #ctl00_ContentPlaceHolder1_GridView2, #ContentPlaceHolder1_GridView1, #ContentPlaceHolder1_GridView2');
+                        tables.forEach(table => {
+                            const rows = table.querySelectorAll('tr');
+                            rows.forEach(row => {
+                                const gradeCell = row.querySelector('td:nth-child(6)');
+                                if (gradeCell && gradeCell.textContent.trim() === 'F') {
+                                    const subjectName = row.querySelector('td:nth-child(2)').textContent.trim();
+                                    failedSubjects.push(subjectName);
+                                    failedSubjectsSet.add(subjectName);
+                                }
                             });
-                        }
+                        });
 
                         let sgpaContent = sgpa;
                         let sgpaTooltip = '';
@@ -582,6 +663,7 @@
 
             // Fetch regular students first
             await fetchStudents('0');
+            await fetchStudents('1');
 
             // If not 1st or 2nd semester, fetch lateral students after regular
             if (semester !== 'I' && semester !== 'II') {
@@ -602,7 +684,7 @@
                 option.textContent = subject;
                 sortOptionsSgpa.appendChild(option);
             });
-        });
+        }
 
         function generateSemesterLinks(regNo, session, branch, college) {
             const semesters = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
@@ -685,6 +767,19 @@
 
         document.getElementById('print-table').addEventListener('click', function() {
             window.print();
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const sessionSelect = document.getElementById('session');
+            const currentYear = new Date().getFullYear();
+            const startYear = 2019;
+
+            for (let year = startYear; year <= currentYear; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = `${year}-${year + 4}`;
+                sessionSelect.appendChild(option);
+            }
         });
     </script>
 </body>
